@@ -1,0 +1,35 @@
+# .github/workflows/deploy.yml
+name: Deploy to Server
+
+on:
+    push:
+        branches:
+            - publish
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+    steps:
+        - name: Checkout repository
+            uses: actions/checkout@v2
+
+        - name: Set up SSH
+            uses: webfactory/ssh-agent@v0.5.3
+            with:
+                ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+        - name: Deploy to Server
+            env:
+                SERVER_IP: ${{ secrets.SERVER_IP }}
+                REMOTE_DIR: ${{ REMOTE_DIR }}
+                REPO_URL: ${{ secrets.REPO_URL }}
+            run: |
+                ssh -o StrictHostKeyChecking=no user@${{ env.SERVER_IP }} << EOF
+                if [ ! -d "$REMOTE_DIR" ]; then
+                    git clone $REPO_URL $REMOTE_DIR
+                else
+                    cd $REMOTE_DIR
+                    git pull
+                fi
+            EOF
