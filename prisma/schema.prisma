@@ -8,44 +8,56 @@ generator client {
 }
 
 model Account {
-    id           String   @id @default(uuid())
+    id           String   @id @unique @default(uuid())
+
     email        String   @unique
     password     String
-    telegramId   String?
+    telegramId   String?  @unique
+
     createdAt    DateTime @default(now())
     updateAt     DateTime @updatedAt
     lastLogin    DateTime @default(now())
     sessionToken String?  @unique
-    name         String?
 }
 
+model DeliveryInfo {
+    id          Int    @id @unique @default(autoincrement())
 
+    firstName   String
+    lastName    String
+    middleName  String
+    phoneNumber Int
 
-model Shop {
-    id Int @id @default(autoincrement())
-
-    // candles CandleProduct
+    index       Int
+    country     String
+    city        String
+    street      String
 }
 
 model CandleProduct {
-    id String @id @default(uuid())
+    id           String          @id @unique @default(uuid())
 
-    title       String
-    description String
-    images      String[]
-    typeProduct TypeProduct
+    title        String          @unique
+    description  String
+    images       String[]
+    typeProduct  TypeProduct
 
     price        Int
-    quantity     Int      @default(0)
-    released     DateTime @default(now())
+    quantity     Int             @default(0)
+    released     DateTime        @default(now())
     giftIncluded Boolean
 
-    isPublished Boolean         @default(false)
-    colors      AviableColors[]
-    smells      AviableSmells[]
+    isPublished  Boolean         @default(false)
+    colors       AviableColors[]
+    smells       AviableSmells[]
 }
 
-// model KitProduct {}
+model KitProduct {
+    id       String   @id @unique @default(uuid())
+
+    title    String   @unique
+    included String[]
+}
 
 enum TypeProduct {
     Candle

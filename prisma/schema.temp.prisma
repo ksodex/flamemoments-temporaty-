@@ -35,3 +35,17 @@ model Like {
 
     @@unique([accountId, postId])
 }
+
+model IPStatistics {
+    id Int @id @unique @default(autoincrement())
+
+    headers String
+    ip      String
+}
+
+
+model Shop {
+    id Int @id @default(autoincrement())
+
+    // candles CandleProduct
+}
