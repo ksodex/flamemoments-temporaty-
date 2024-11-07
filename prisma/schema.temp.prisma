@@ -1,0 +1,37 @@
+model Account {
+    id           String   @id @default(uuid())
+    email        String   @unique
+    password     String
+    telegramId   String?
+    createdAt    DateTime @default(now())
+    updateAt     DateTime @updatedAt
+    lastLogin    DateTime @default(now())
+    sessionToken String?  @unique
+    name         String?
+
+    likes Like[]
+}
+
+model Post {
+    id      Int     @id @default(autoincrement())
+    title   String
+    content String
+    image   String?
+
+    authorId    String
+    isPublished Boolean @default(false)
+
+    likes Like[]
+}
+
+model Like {
+    id        Int      @id @default(autoincrement())
+    accountId String   @default("System")
+    postId    Int
+    createdAt DateTime @default(now())
+
+    account Account @relation(fields: [accountId], references: [id])
+    post    Post    @relation(fields: [postId], references: [id])
+
+    @@unique([accountId, postId])
+}

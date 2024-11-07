@@ -8,60 +8,54 @@ generator client {
 }
 
 model Account {
-    id         String   @id @default(uuid())
-    email      String   @unique
-    password   String
-    telegramId String?
-    createdAt  DateTime @default(now())
-    updateAt   DateTime @updatedAt
-    lastLogin  DateTime @default(now())
-    name       String?
-
-    likes Like[]
+    id           String   @id @default(uuid())
+    email        String   @unique
+    password     String
+    telegramId   String?
+    createdAt    DateTime @default(now())
+    updateAt     DateTime @updatedAt
+    lastLogin    DateTime @default(now())
+    sessionToken String?  @unique
+    name         String?
 }
 
-model Post {
-    id      Int     @id @default(autoincrement())
-    title   String
-    content String
-    image   String?
 
-    authorId    String
-    isPublished Boolean @default(false)
 
-    likes Like[]
+model Shop {
+    id Int @id @default(autoincrement())
+
+    // candles CandleProduct
 }
 
-model Like {
-    id        Int      @id @default(autoincrement())
-    accountId String
-    postId    Int
-    createdAt DateTime @default(now())
-
-    account Account @relation(fields: [accountId], references: [id])
-    post    Post    @relation(fields: [postId], references: [id])
-
-    @@unique([accountId, postId])
-}
-
-model GlobalCandles {
+model CandleProduct {
     id String @id @default(uuid())
 
-    name        String
+    title       String
     description String
+    images      String[]
+    typeProduct TypeProduct
 
-    price Int
+    price        Int
+    quantity     Int      @default(0)
+    released     DateTime @default(now())
+    giftIncluded Boolean
 
-    isPublished Boolean @default(false)
-
-    color Colors @default(DefaultColor)
-    smell Smells @default(DefaultSmell)
+    isPublished Boolean         @default(false)
+    colors      AviableColors[]
+    smells      AviableSmells[]
 }
 
-enum Colors {
+// model KitProduct {}
+
+enum TypeProduct {
+    Candle
+    Kit
+}
+
+enum AviableColors {
     DefaultColor
 }
 
-enum Smells {
+enum AviableSmells {
     DefaultSmell
 }
