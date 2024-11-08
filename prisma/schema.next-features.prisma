@@ -49,3 +49,9 @@ model Shop {
 
     // candles CandleProduct
 }
+
+enum Rules {
+    ChiefAdmin
+    Assistant
+    User
+}

@@ -1,38 +1,15 @@
 import "dotenv/config"
 
-import Fastify from "fastify"
-import fastifyCookie from "@fastify/cookie"
-import fastifyHelmet from "@fastify/helmet"
-
 import { PrismaClient } from "@prisma/client"
 
-import { Account } from "./routes/account"
-import { Shop } from "./routes/shop"
+import { InitializeServer } from "./routes"
 
 const host = String(process.env.LISTENING_HOST)
 const port = Number(process.env.LISTENING_PORT)
 const cookieSecret = String(process.env.COOKIE_SECRET)
+const additionalPath = String(process.env.ADDITIONAL_PATH)
 
-const fastify = Fastify({ logger: true })
-fastify.register(Account)
-fastify.register(Shop)
-fastify.register(fastifyCookie, { secret: cookieSecret })
-fastify.register(fastifyHelmet, {
-    global: true,
-    frameguard: { action: "deny" },
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'"],
-        }
-    },
-    hsts: {
-        maxAge: 31536000,
-        includeSubDomains: true,
-        preload: true
-    }
-})
-
+const { fastify } = InitializeServer({ cookieSecret, additionalPath })
 
 fastify.decorate("prisma", new PrismaClient())
 declare module "fastify" {
