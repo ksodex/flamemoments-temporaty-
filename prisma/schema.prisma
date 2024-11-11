@@ -8,66 +8,160 @@ generator client {
 }
 
 model Account {
-    id           String   @id @unique @default(uuid())
+    id String @id @unique @default(uuid())
 
-    email        String   @unique
-    password     String
-    telegramId   String?  @unique
+    email      String  @unique
+    password   String
+    telegramId String? @unique
 
-    createdAt    DateTime @default(now())
-    updateAt     DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    lastLogin DateTime @default(now())
+
+    sessions     Session[]
+    deliveryInfo DeliveryInfo[]
+    orders       Order[]
+    promoCodes   PromoCode[]
+}
+
+model Session {
+    id Int @id @default(autoincrement())
+
+    sessionToken String   @unique
+    expiresAt    DateTime
     lastLogin    DateTime @default(now())
-    sessionToken String?  @unique
+
+    userAgent String
+    ipAddress String
+
+    account   Account @relation(fields: [accountId], references: [id])
+    accountId String
 }
 
 model DeliveryInfo {
-    id          Int    @id @unique @default(autoincrement())
+    id Int @id @unique @default(autoincrement())
 
     firstName   String
     lastName    String
     middleName  String
-    phoneNumber Int
+    phoneNumber String
 
-    index       Int
-    country     String
-    city        String
-    street      String
+    index   Int
+    country String
+    city    String
+    street  String
+
+    account   Account @relation(fields: [accountId], references: [id])
+    accountId String
+}
+
+model Order {
+    id Int @id @unique @default(autoincrement())
+
+    creationDate    DateTime    @default(now())
+    lastUpdatedDate DateTime    @updatedAt
+    orderedProduct  Json // {"data": [{ "productId": "...", "quantity": 2 }, {...}]}
+
+    customerNotes String?
+    adminNotes    String?
+
+    cancellationDate   DateTime?
+    cancellationReason String?
+
+    paymentStatus PaymentStatus
+    orderStatus   OrderStatus
+
+    account   Account @relation(fields: [accountId], references: [id])
+    accountId String
 }
 
 model CandleProduct {
-    id           String          @id @unique @default(uuid())
+    id String @id @unique @default(uuid())
 
-    title        String          @unique
-    description  String
-    images       String[]
-    typeProduct  TypeProduct
+    title       String   @unique
+    description String
+    images      String[]
 
-    price        Int
-    quantity     Int             @default(0)
-    released     DateTime        @default(now())
-    giftIncluded Boolean
+    price          Int
+    quantity       Int      @default(0)
+    released       DateTime @default(now())
+    isGiftIncluded Boolean
 
-    isPublished  Boolean         @default(false)
-    colors       AviableColors[]
-    smells       AviableSmells[]
+    isPublished Boolean @default(false)
+
+    typeProduct   AviableProductType @relation(fields: [typeProductId], references: [id])
+    typeProductId Int
+
+    colors AviableProductColors[]  @relation("ProductColors")
+    smells AviablesProductSmells[] @relation("ProductSmells")
+
+    promoCodes PromoCode[] @relation("ProductPromoCodes")
 }
 
-model KitProduct {
-    id       String   @id @unique @default(uuid())
+// |==> [SystemModels] <==|
+model AviableProductType {
+    id Int @id @unique @default(autoincrement())
 
-    title    String   @unique
-    included String[]
+    type String
+
+    candleProduct CandleProduct[]
+    promoCodes PromoCode[] @relation("TypePromoCodes")
 }
 
-enum TypeProduct {
-    Candle
-    Kit
+model AviableProductColors {
+    id Int @id @unique @default(autoincrement())
+
+    color String
+
+    candleProducts CandleProduct[] @relation("ProductColors")
 }
 
-enum AviableColors {
-    DefaultColor
+model AviablesProductSmells {
+    id Int @id @unique @default(autoincrement())
+
+    smell String
+
+    candleProducts CandleProduct[] @relation("ProductSmells")
 }
 
-enum AviableSmells {
-    DefaultSmell
+model PromoCode {
+    id        String   @id @default(uuid())
+    code      String   @unique
+    discount  Float
+    validFrom DateTime
+    validTo   DateTime
+    usageLimit Int?
+
+    productType   AviableProductType? @relation("TypePromoCodes", fields: [productTypeId], references: [id])
+    productTypeId Int?
+
+    product   CandleProduct? @relation("ProductPromoCodes", fields: [productId], references: [id])
+    productId String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    account   Account? @relation(fields: [accountId], references: [id])
+    accountId String?
+}
+
+enum OrderStatus {
+    Pending
+    Created
+    Manufactured
+    Sended
+    Arrived
+    Received
+}
+
+enum PaymentStatus {
+    Pending
+    PaidSuccess
+    PaidFailed
+}
+
+enum Rules {
+    SuperAdmin
+    Assistant
+    User
 }

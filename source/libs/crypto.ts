@@ -1,8 +1,12 @@
 import { randomBytes, createCipheriv, createDecipheriv, createHash } from "crypto"
 
 export class Crypto {
-    static GenerateRandomString(length: number): string {
-        return randomBytes(length).toString("hex")
+    static GenerateRandomString(prefix: string, length: number): string {
+        return prefix + randomBytes(length).toString("hex")
+    }
+
+    static CreateSHA256(data: string): string {
+        return createHash('sha256').update(data).digest('hex')
     }
 
     static Encrypt(text: string, password: string): string {
