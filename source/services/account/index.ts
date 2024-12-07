@@ -1,7 +1,7 @@
 import { InitializeServer } from "../initializeServer"
 import { ACCOUNT_SERVICE as ACCOUNT } from "../config"
 
-import { Account } from "./routes"
+import { Account } from "./routes/auth"
 
 const { fastify } = InitializeServer()
 

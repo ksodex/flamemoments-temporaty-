@@ -11,13 +11,13 @@ export const ACCOUNT_SERVICE = {
 }
 export const STORE_SERVICE = {
     LISTEN_ADDRESS: "0.0.0.0",
-    LISTEN_PORT: 9865,
+    LISTEN_PORT: 9855,
 
     REQUEST_PER_SECOND: "10"
 }
 export const PROMOUTION_SERVICE = {
     LISTEN_ADDRESS: "0.0.0.0",
-    LISTEN_PORT: 9865,
+    LISTEN_PORT: 9845,
 
     REQUEST_PER_SECOND: "10"
 }

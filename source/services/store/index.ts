@@ -1,7 +1,11 @@
 import { InitializeServer } from "../initializeServer"
 import { STORE_SERVICE as STORE } from "../config"
 
+import { Store } from "./routes"
+
 const { fastify } = InitializeServer()
+
+fastify.register(Store, { prefix: "/store" })
 
 process.on("SIGINT", async () => {
     try {
